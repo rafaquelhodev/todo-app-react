@@ -12,7 +12,7 @@ export default class Grid extends Component {
                 classes += `col-${columnMapBootstrap[index]}-${cols[index]} `;
             }
         }
-        console.log(classes);
+
         return classes.trim("");
     }
 
