@@ -4,13 +4,14 @@ import axios from "axios"
 import PageHeader from "../template/pageHeader"
 import TodoForm from "./todoForm"
 import TodoList from "./todoList"
+import TodoSummary from "./todoSummary"
 
 const URL = "http://localhost:3003/api/todos"
 
 export default class Todo extends Component {
     constructor(props) {
         super(props)
-        this.state = { description: "", list: [] }
+        this.state = { description: "", list: [], nFinishedTasks: 0, nUnfinishedTasks: 0 }
 
         this.handleChange = this.handleChange.bind(this)
         this.handleAdd = this.handleAdd.bind(this)
@@ -19,6 +20,7 @@ export default class Todo extends Component {
         this.handleMarkAsPending = this.handleMarkAsPending.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
         this.handleClear = this.handleClear.bind(this)
+        this.handleSummary = this.handleSummary.bind(this)
 
         this.refresh()
     }
@@ -26,7 +28,10 @@ export default class Todo extends Component {
     refresh(description = "") {
         const search = description ? `&description__regex=/${description}/` : ""
         axios.get(`${URL}?sort=-createdAt${search}`)
-            .then(resp => this.setState({...this.state, description, list: resp.data}))
+            .then(resp => {
+                let todoStatus = this.handleSummary(resp.data)
+                this.setState({...this.state, description, list: resp.data, nFinishedTasks: todoStatus.nFinishedTasks, nUnfinishedTasks: todoStatus.unFinishedTasks})
+            })
     }
 
     handleChange(e) {
@@ -63,6 +68,25 @@ export default class Todo extends Component {
         this.refresh()
     }
 
+    handleSummary(todoList) {
+        let nFinishedTasks = 0;
+        let unFinishedTasks = 0;
+
+        for (let index = 0; index < todoList.length; index++) {
+            const todo = todoList[index];
+            console.log(todo)
+            if (todo.done)
+                nFinishedTasks += 1
+            else
+                unFinishedTasks += 1
+        }
+
+        let taskStatus = new Object()
+        taskStatus.nFinishedTasks = nFinishedTasks
+        taskStatus.unFinishedTasks = unFinishedTasks
+        return taskStatus
+    }
+
     render() {
         return (
             <div>
@@ -72,7 +96,10 @@ export default class Todo extends Component {
                     handleAdd={this.handleAdd}
                     handleSearch={this.handleSearch}
                     handleClear={this.handleClear}>
-                    </TodoForm>
+                </TodoForm>
+                <TodoSummary nFinishedTasks={this.state.nFinishedTasks}
+                    nUnFinishedTasks={this.state.nUnfinishedTasks}>
+                </TodoSummary>
                 <TodoList
                     list={this.state.list}
                     handleRemove={this.handleRemove}
