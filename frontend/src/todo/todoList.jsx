@@ -8,9 +8,11 @@ export default props => {
 
         return list.map(el =>
             <tr key={el._id}>
-                <td>{el.description}</td>
+                <td className={el.done? "markedAsDone": ""}>{el.description}</td>
                 <td>
-                    <IconButton style="danger" icon="trash-o" onClick={() => props.handleRemove(el)}/>
+                    <IconButton style="success" icon="check" hide={el.done} onClick={() => props.handleMarkAsDone(el)}/>
+                    <IconButton style="warning" icon="undo" hide={!el.done} onClick={() => props.handleMarkAsPending(el)}/>
+                    <IconButton style="danger" icon="trash-o" hide={!el.done} onClick={() => props.handleRemove(el)}/>
                 </td>
             </tr>)
     }
