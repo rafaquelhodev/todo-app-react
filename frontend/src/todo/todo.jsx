@@ -37,18 +37,18 @@ export default class Todo extends Component {
             .then(() => this.refresh())
     }
 
-    handleRemove(element) {
-        axios.delete(`${URL}/${element._id}`)
+    handleRemove(todo) {
+        axios.delete(`${URL}/${todo._id}`)
             .then(() => this.refresh())
     }
 
-    handleMarkAsDone(element) {
-        axios.put(`${URL}/${element._id}`, { ...element, done: true })
+    handleMarkAsDone(todo) {
+        axios.put(`${URL}/${todo._id}`, { ...todo, done: true })
         .then(() => this.refresh())
     }
 
-    handleMarkAsPending(element) {
-        axios.put(`${URL}/${element._id}`, { ...element, done: false })
+    handleMarkAsPending(todo) {
+        axios.put(`${URL}/${todo._id}`, { ...todo, done: false })
         .then(() => this.refresh())
     }
 
